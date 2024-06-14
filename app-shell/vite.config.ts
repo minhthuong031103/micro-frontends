@@ -11,7 +11,7 @@ export default defineConfig({
       filename: 'remoteEntry.js',
       remotes: {
         product: 'http://localhost:5001/assets/remoteEntry.js',
-        // order: 'http://localhost:5002/assets/remoteEntry.js',
+        order: 'http://localhost:5002/assets/remoteEntry.js',
       },
 
       shared: ['react', 'react-dom'],
@@ -23,9 +23,9 @@ export default defineConfig({
     },
   },
   build: {
-    // modulePreload: false,
+    modulePreload: false,
     target: 'esnext',
     minify: false,
-    cssCodeSplit: true,
+    cssCodeSplit: false,
   },
 });

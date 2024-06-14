@@ -8,7 +8,9 @@ module.exports = {
     './src/**/*.{ts,tsx}',
   ],
   safelist: [
+
     "hidden",
+    "sm:table-cell",
     "md:table-cell",
     "sm:hidden",
     "md:hidden",
@@ -19,7 +21,10 @@ module.exports = {
     "md:block",
     "lg:block",
     "xl:block",
-    "sm:table-cell"
+    "sm:flex",
+    "md:flex",
+    "lg:flex",
+
   ],
   prefix: "",
   theme: {
