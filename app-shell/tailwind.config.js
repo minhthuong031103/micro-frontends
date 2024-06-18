@@ -3,12 +3,17 @@ module.exports = {
   darkMode: ["class"],
   content: [
     './pages/**/*.{ts,tsx}',
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
     './components/**/*.{ts,tsx}',
+    './src/components/**/*.{ts,tsx}',
     './app/**/*.{ts,tsx}',
     './src/**/*.{ts,tsx}',
+    'product/Product.tsx',
+
   ],
   safelist: [
-
+    "gap-y-3",
     "hidden",
     "sm:table-cell",
     "md:table-cell",
@@ -24,7 +29,17 @@ module.exports = {
     "sm:flex",
     "md:flex",
     "lg:flex",
-
+    "top-2.5",
+    "left-2.5",
+    "grid",
+    "sm:grid-cols-2",
+    "md:grid-cols-3",
+    "lg:grid-cols-3",
+    "lg:grid-cols-4",
+    "justify-end",
+    "px-1",
+    "mx-1",
+    "mx-3"
   ],
   prefix: "",
   theme: {

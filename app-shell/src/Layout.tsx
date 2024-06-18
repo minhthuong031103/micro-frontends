@@ -37,9 +37,11 @@ import {
 } from './components/ui/dropdown-menu';
 import { Sheet, SheetContent, SheetTrigger } from './components/ui/sheet';
 import { Input } from './components/ui/input';
-import { Outlet } from 'react-router-dom';
+import { Link, Outlet, useLocation } from 'react-router-dom';
 
 export default function Layout() {
+  const pathName = useLocation();
+  console.log('🚀 ~ Layout ~ pathName:', pathName);
   return (
     <div
       className={
@@ -63,30 +65,26 @@ export default function Layout() {
           </div>
           <div className="w-full ">
             <nav className="w-full grid items-start px-2 text-sm font-medium lg:px-4">
-              <a
-                href="#"
-                className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
-              >
-                <Home className="h-4 w-4" />
-                Dashboard
-              </a>
-              <a
-                href="#"
-                className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
-              >
-                <ShoppingCart className="h-4 w-4" />
-                Orders
-                <Badge className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full">
-                  6
-                </Badge>
-              </a>
-              <a
-                href="#"
-                className="flex items-center gap-3 rounded-lg bg-muted px-3 py-2 text-primary transition-all hover:text-primary"
+              <Link
+                to="/products"
+                className={`flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary ${
+                  pathName.pathname == '/products'
+                    ? 'bg-muted text-primary'
+                    : ''
+                }`}
               >
                 <Package className="h-4 w-4" />
                 Products{' '}
-              </a>
+              </Link>
+              <Link
+                to="orders"
+                className={`flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary ${
+                  pathName.pathname == '/orders' ? 'bg-muted text-primary' : ''
+                }`}
+              >
+                <ShoppingCart className="h-4 w-4" />
+                Orders
+              </Link>
             </nav>
           </div>
           <div className="mt-auto p-4"></div>
@@ -102,34 +100,28 @@ export default function Layout() {
           </SheetTrigger>
           <SheetContent side="left" className="sm:max-w-xs">
             <nav className="grid gap-6 text-lg font-medium">
-              <a
-                href="#"
+              <Link
+                to="/"
                 className="group flex h-10 w-10 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:text-base"
               >
                 <Package2 className="h-5 w-5 transition-all group-hover:scale-110" />
                 <span className="sr-only">Acme Inc</span>
-              </a>
-              <a
-                href="#"
-                className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
-              >
-                <Home className="h-5 w-5" />
-                Dashboard
-              </a>
-              <a
-                href="#"
+              </Link>
+
+              <Link
+                to="/orders"
                 className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
               >
                 <ShoppingCart className="h-5 w-5" />
                 Orders
-              </a>
-              <a
-                href="#"
+              </Link>
+              <Link
+                to="/products"
                 className="flex items-center gap-4 px-2.5 text-foreground"
               >
                 <Package className="h-5 w-5" />
                 Products
-              </a>
+              </Link>
             </nav>
           </SheetContent>
         </Sheet>

@@ -12,7 +12,8 @@ export default defineConfig({
       filename: 'remoteEntry.js', // default file name
       exposes: {
         './Product': './src/Product',
-        // './ProductDetail': './src/ProductDetail',
+
+        './ProductDetail': './src/ProductDetail',
       },
       shared: ['react', 'react-dom'],
     }),
