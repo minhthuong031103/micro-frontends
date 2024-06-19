@@ -82,7 +82,8 @@ export interface IProduct {
 }
 import { Link } from 'react-router-dom';
 export default function ProductPage() {
-  const { user } = useContext(AuthContext);
+  const { user, jwt } = useContext(AuthContext);
+
   console.log('🚀 ~ ProductPage ~ user:', user);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [files, setFiles] = useState<FileWithPreview[]>([]);
@@ -116,7 +117,11 @@ export default function ProductPage() {
         description: description,
         imageUrl: res.data?.url,
       };
-      const response = await axiosClient.post('/api/product', data);
+      const response = await axiosClient.post('/api/product', data, {
+        headers: {
+          Authorization: `Bearer ${jwt}`,
+        },
+      });
       console.log('🚀 ~ onSubmit ~ response:', response);
       setIsSubmitting(false);
       toast.success('Product added successfully');
