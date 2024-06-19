@@ -12,6 +12,10 @@ export default defineConfig({
       exposes: {
         './Order': './src/Order',
       },
+      remotes: {
+        app_shell:
+          'https://micro-frontends-app-shell.vercel.app/assets/remoteEntry.js',
+      },
       shared: ['react', 'react-dom'],
     }),
   ],
