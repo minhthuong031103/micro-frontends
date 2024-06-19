@@ -17,7 +17,8 @@ export default defineConfig({
         product:
           'https://micro-frontends-products.vercel.app/assets/remoteEntry.js',
         // order: 'http://localhost:5002/assets/remoteEntry.js',
-        order: 'https://micro-frontends-orders.app/assets/remoteEntry.js',
+        order:
+          'https://micro-frontends-orders.vercel.app/assets/remoteEntry.js',
       },
 
       shared: ['react', 'react-dom'],
