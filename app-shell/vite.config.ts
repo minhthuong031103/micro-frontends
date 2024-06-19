@@ -9,9 +9,16 @@ export default defineConfig({
     federation({
       name: 'app_shell',
       filename: 'remoteEntry.js',
+      exposes: {
+        './AuthContext': './src/AuthContext',
+      },
       remotes: {
-        product: 'http://localhost:5001/assets/remoteEntry.js',
-        order: 'http://localhost:5002/assets/remoteEntry.js',
+        // product: 'http://localhost:5001/assets/remoteEntry.js',
+        product:
+          'https://micro-frontends-products.vercel.app/assets/remoteEntry.js',
+        // order: 'http://localhost:5002/assets/remoteEntry.js',
+        order:
+          'https://micro-frontends-products.orders.app/assets/remoteEntry.js',
       },
 
       shared: ['react', 'react-dom'],

@@ -43,7 +43,7 @@ import {
   BreadcrumbSeparator,
 } from './components/ui/breadcrumb';
 import { Input } from './components/ui/input';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { axiosClient } from './lib/axios';
 import {
   Dialog,
@@ -58,8 +58,18 @@ import { Textarea } from './components/ui/textarea';
 import { ScrollArea } from './components/ui/scroll-area';
 import { FileDialog, FileWithPreview } from './components/image-upload';
 import toast from 'react-hot-toast';
-
-interface IProduct {
+import { Zoom } from './components/zoom-image';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination';
+import { AuthContext } from 'app_shell/AuthContext';
+export interface IProduct {
   productId: string;
   productName: string;
   price: number;
@@ -67,9 +77,13 @@ interface IProduct {
   quantity: number;
   sold: number;
   imageUrl: string;
-}
 
+  createdAt: string;
+}
+import { Link } from 'react-router-dom';
 export default function ProductPage() {
+  const { user } = useContext(AuthContext);
+  console.log('🚀 ~ ProductPage ~ user:', user);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [files, setFiles] = useState<FileWithPreview[]>([]);
   const [name, setName] = useState('');
@@ -96,7 +110,7 @@ export default function ProductPage() {
       });
       const data = {
         productName: name,
-        price: parseInt(price),
+        price: parseFloat(price),
         quantity: parseInt(quantity),
         sold: 0,
         description: description,
@@ -123,15 +137,35 @@ export default function ProductPage() {
   console.log('🚀 ~ Product ~ products:', products);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<any>(null);
-
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
   const [search, setSearch] = useState('');
 
+  const sortedProducts: IProduct[] = useMemo(() => {
+    return products.sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() ||
+        0 - new Date(a.createdAt).getTime() ||
+        0
+    );
+  }, [products]);
+  console.log(
+    '🚀 ~ constsortedProducts:IProduct[]=useMemo ~ sortedProducts:',
+    sortedProducts
+  );
+
   const filteredProducts: IProduct[] = useMemo(() => {
-    return products?.filter((product: IProduct) => {
+    return sortedProducts?.filter((product: IProduct) => {
       return product.productName.toLowerCase().includes(search.toLowerCase());
     });
-  }, [products, search]);
+  }, [sortedProducts, search]);
 
+  const paginatedProducts: IProduct[] = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return filteredProducts.slice(startIndex, endIndex);
+  }, [filteredProducts, currentPage]);
+  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
   const fetchProducts = async () => {
     if (!refetch) {
       setLoading(true);
@@ -182,7 +216,10 @@ export default function ProductPage() {
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setCurrentPage(1);
+            }}
             type="search"
             placeholder="Search..."
             className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[336px]"
@@ -280,6 +317,7 @@ export default function ProductPage() {
           </div>
         </div>
         <TabsContent value="all">
+          {user?.name}
           <Card x-chunk="dashboard-06-chunk-0">
             <CardHeader>
               <CardTitle>Products</CardTitle>
@@ -308,64 +346,25 @@ export default function ProductPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {/* <TableRow>
-                    <TableCell className=" sm:table-cell">
-                      <img
-                        alt="Product image"
-                        className="aspect-square rounded-md object-cover"
-                        height="64"
-                        src="https://cdn3d.iconscout.com/3d/premium/thumb/product-5806313-4863042.png?f=webp"
-                        width="64"
-                      />
-                    </TableCell>
-                    <TableCell className="font-medium">
-                      Laser Lemonade Machine
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline">123</Badge>
-                    </TableCell>
-                    <TableCell className=" md:table-cell">$499.99</TableCell>
-                    <TableCell className=" md:table-cell">25</TableCell>
-                    <TableCell className=" md:table-cell">cc </TableCell>
-                    <TableCell className=" md:table-cell">
-                      2023-07-12 10:42 AM
-                    </TableCell>
-                    <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            aria-haspopup="true"
-                            size="icon"
-                            variant="ghost"
-                          >
-                            <MoreHorizontal className="h-4 w-4" />
-                            <span className="sr-only">Toggle menu</span>
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                          <DropdownMenuItem>Edit</DropdownMenuItem>
-                          <DropdownMenuItem>Delete</DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                   */}
-
-                  {filteredProducts?.map((product) => (
+                  {paginatedProducts?.map((product) => (
                     <TableRow key={product.productId}>
                       <TableCell className=" sm:table-cell">
-                        <img
-                          alt="Product image"
-                          className="aspect-square rounded-md object-cover"
-                          height="64"
-                          src={product.imageUrl}
-                          width="64"
-                        />
+                        <Zoom>
+                          <img
+                            alt="Product image"
+                            className="aspect-square rounded-md object-cover"
+                            height="64"
+                            src={product.imageUrl}
+                            width="64"
+                          />
+                        </Zoom>
                       </TableCell>
-                      <TableCell className="font-medium">
-                        {product.productName}
-                      </TableCell>
+                      <a href={`/products/${product.productId}`}>
+                        <TableCell className="hover:underline font-bold">
+                          {product.productName}
+                        </TableCell>
+                      </a>
+
                       <TableCell>
                         <Badge variant="outline">{product.quantity}</Badge>
                       </TableCell>
@@ -379,7 +378,7 @@ export default function ProductPage() {
                         {product.description}
                       </TableCell>
                       <TableCell className=" md:table-cell">
-                        2023-07-12 10:42 AM
+                        {product.createdAt}
                       </TableCell>
                       <TableCell>
                         <DropdownMenu>
@@ -405,6 +404,37 @@ export default function ProductPage() {
                 </TableBody>
               </Table>
             </CardContent>
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    onClick={() =>
+                      setCurrentPage((prev) => Math.max(prev - 1, 1))
+                    }
+                    disabled={currentPage === 1}
+                  />
+                </PaginationItem>
+                {[...Array(totalPages)].map((_, index) => (
+                  <PaginationItem key={index}>
+                    <PaginationLink
+                      isActive={index + 1 === currentPage}
+                      onClick={() => setCurrentPage(index + 1)}
+                    >
+                      {index + 1}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+                <PaginationItem>
+                  <PaginationNext
+                    href="#"
+                    onClick={() =>
+                      setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                    }
+                    disabled={currentPage === totalPages}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
             <CardFooter>
               <div className="text-xs text-muted-foreground">
                 Showing <strong>{filteredProducts?.length}</strong> products

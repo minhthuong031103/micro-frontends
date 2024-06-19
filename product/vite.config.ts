@@ -12,8 +12,14 @@ export default defineConfig({
       filename: 'remoteEntry.js', // default file name
       exposes: {
         './Product': './src/Product',
-
         './ProductDetail': './src/ProductDetail',
+      },
+      remotes: {
+        app_shell:
+          'https://micro-frontends-app-shell.vercel.app/assets/remoteEntry.js',
+
+        // https://micro-frontends-products.vercel.app/assets/remoteEntry.js
+        // // app_shell: 'http://localhost:4000/assets/remoteEntry.js',
       },
       shared: ['react', 'react-dom'],
     }),

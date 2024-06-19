@@ -38,10 +38,13 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from './components/ui/sheet';
 import { Input } from './components/ui/input';
 import { Link, Outlet, useLocation } from 'react-router-dom';
+import { useContext } from 'react';
+import { AuthContext } from './AuthContext';
 
 export default function Layout() {
   const pathName = useLocation();
-  console.log('🚀 ~ Layout ~ pathName:', pathName);
+  const { logout, user } = useContext(AuthContext);
+  console.log('🚀 ~ Layout ~ pathName:', user);
   return (
     <div
       className={
@@ -56,13 +59,14 @@ export default function Layout() {
               className="flex items-center gap-2 font-semibold w-full"
             >
               <Package2 className="h-6 w-6" />
-              <span className="">Acme Inc</span>
+              <span className="">{user?.name}</span>
             </a>
             <Button variant="outline" size="icon" className="ml-auto h-8 w-8">
               <Bell className="h-4 w-4" />
               <span className="sr-only">Toggle notifications</span>
             </Button>
           </div>
+          <div className="ml-3">{user?.email}</div>
           <div className="w-full ">
             <nav className="w-full grid items-start px-2 text-sm font-medium lg:px-4">
               <Link
@@ -85,6 +89,15 @@ export default function Layout() {
                 <ShoppingCart className="h-4 w-4" />
                 Orders
               </Link>
+              <Button
+                onClick={() => {
+                  logout();
+                  window.location.href = '/login';
+                }}
+                className="mt-10"
+              >
+                Log out
+              </Button>
             </nav>
           </div>
           <div className="mt-auto p-4"></div>

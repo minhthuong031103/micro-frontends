@@ -65,8 +65,32 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { useLocation } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { axiosClient } from './lib/axios';
+import { IProduct } from './ProductPage';
+import { Zoom } from './components/zoom-image';
 
 export default function ProductDetailPage() {
+  const pathname = window.location.pathname; // "/products/22430904-2e09-11ef-bd24-facbd1e0c44f"
+  const segments = pathname.split('/'); // Splits the pathname into an array
+  const productId = segments.pop(); // Gets the last element of the array
+  const fetchProduct = async () => {
+    try {
+      const response = await axiosClient.get('/api/product/' + productId);
+      setProduct(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const [product, setProduct] = useState<IProduct>();
+  console.log('🚀 ~ ProductDetailPage ~ product:', product);
+
+  useEffect(() => {
+    fetchProduct();
+  }, []);
+
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
       <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
@@ -85,7 +109,7 @@ export default function ProductDetailPage() {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage>Edit Product</BreadcrumbPage>
+              <BreadcrumbPage>{product?.productName}</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
@@ -97,7 +121,7 @@ export default function ProductDetailPage() {
                 <span className="sr-only">Back</span>
               </Button>
               <h1 className="flex-1 shrink-0 whitespace-nowrap text-xl font-semibold tracking-tight sm:grow-0">
-                Pro Controller
+                {product?.productName}
               </h1>
               <Badge variant="outline" className="ml-auto sm:ml-0">
                 In stock
@@ -124,15 +148,15 @@ export default function ProductDetailPage() {
                           id="name"
                           type="text"
                           className="w-full"
-                          defaultValue="Gamer Gear Pro Controller"
+                          value={product?.productName}
                         />
                       </div>
                       <div className="grid gap-3">
                         <Label htmlFor="description">Description</Label>
                         <Textarea
                           id="description"
-                          defaultValue="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl nec ultricies ultricies, nunc nisl ultricies nunc, nec ultricies nunc nisl nec nunc."
                           className="min-h-32"
+                          value={product?.description}
                         />
                       </div>
                     </div>
@@ -141,8 +165,11 @@ export default function ProductDetailPage() {
                 <Card x-chunk="dashboard-07-chunk-1">
                   <CardHeader>
                     <CardTitle>Stock</CardTitle>
-                    <CardDescription>In stock: 10</CardDescription>
-                    <CardDescription>Price: 10</CardDescription>
+                    <CardDescription>
+                      In stock: {product?.quantity}
+                    </CardDescription>
+                    <CardDescription>Price: {product?.price}</CardDescription>
+                    <CardDescription>Sold: {product?.sold}</CardDescription>
                   </CardHeader>
 
                   <CardFooter className="justify-center border-t p-4">
@@ -164,24 +191,26 @@ export default function ProductDetailPage() {
                   </CardHeader>
                   <CardContent>
                     <div className="grid gap-2">
-                      <img
-                        alt="Product image"
-                        className="aspect-square w-full rounded-md object-cover"
-                        height="300"
-                        src="/placeholder.svg"
-                        width="300"
-                      />
+                      <Zoom>
+                        <img
+                          alt="Product image"
+                          className="aspect-square w-full rounded-md object-cover"
+                          height="300"
+                          src={product?.imageUrl}
+                          width="300"
+                        />
+                      </Zoom>
                     </div>
                   </CardContent>
                 </Card>
               </div>
             </div>
-            <div className="flex items-center justify-center gap-2 md:hidden">
+            {/* <div className="flex items-center justify-center gap-2 md:hidden">
               <Button variant="outline" size="sm">
                 Discard
               </Button>
               <Button size="sm">Save Product</Button>
-            </div>
+            </div> */}
           </div>
         </main>
       </div>

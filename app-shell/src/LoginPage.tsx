@@ -8,9 +8,15 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { AuthContext } from './AuthContext';
+import toast from 'react-hot-toast';
 
 export default function LoginPage() {
+  const { login } = useContext(AuthContext);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   return (
     <Card className="mx-auto my-10 max-w-sm">
       <CardHeader>
@@ -28,6 +34,8 @@ export default function LoginPage() {
               type="email"
               placeholder="m@example.com"
               required
+              onChange={(e) => setEmail(e.target.value)}
+              value={email}
             />
           </div>
           <div className="grid gap-2">
@@ -37,9 +45,25 @@ export default function LoginPage() {
               type="password"
               placeholder="Password"
               required
+              onChange={(e) => setPassword(e.target.value)}
+              value={password}
             />
           </div>
-          <Button type="submit" className="w-full">
+          <Button
+            onClick={async () => {
+              try {
+                if (!email || !password) {
+                  return toast.error('Email and password are required');
+                }
+                await login(email, password);
+                window.location.href = '/';
+              } catch (e) {
+                console.log('🚀 ~ onClick={ ~ e:', e);
+                toast.error(e.response?.data?.message || 'An error occurred');
+              }
+            }}
+            className="w-full"
+          >
             Login
           </Button>
         </div>
