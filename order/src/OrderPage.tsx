@@ -104,7 +104,10 @@ export default function OrderPage() {
 
   const filteredOrders: OrderProps[] = useMemo(() => {
     return sortedOrders.filter((order) => {
-      return order.customerId.toLowerCase().includes(search.toLowerCase());
+      return order.customerId.toLowerCase().includes(search.toLowerCase()) &&
+        user?.role === 'admin'
+        ? true
+        : order.customerId == user?.customer_id;
     });
   }, [search, sortedOrders]);
 
@@ -203,7 +206,6 @@ export default function OrderPage() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Customer</TableHead>
-                    <TableHead className="hidden sm:table-cell">Type</TableHead>
                     <TableHead className="hidden sm:table-cell">
                       Status
                     </TableHead>
